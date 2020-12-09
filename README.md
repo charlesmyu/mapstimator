@@ -12,7 +12,11 @@ In the project directory, you can run:
 ### `yarn start`
 
 Builds app then opens Firebase emulator, emulating hosting and Firestore.
-Visit at localhost:5000. Console at localhost:4000.
+Visit at localhost:5000. Console at localhost:4000, add data there. Ensure emulation is enabled in App.js.  
+
+### `yarn start-basic`
+
+Launches React based development server. Accessible on localhost:3000.
 
 ### `yarn test`
 

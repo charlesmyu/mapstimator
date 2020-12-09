@@ -14,6 +14,7 @@
   },
   "scripts": {
     "start": "yarn build && firebase emulators:start",
+    "start-basic": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

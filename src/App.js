@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import React from 'react';
 //import ReactDOM from 'react-dom';
@@ -17,7 +16,9 @@ const firebaseConfig = {
 };
 
 function App() {
-  firebase.initializeApp(firebaseConfig);
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
 
   // REMOVE FOR PRODUCTION
   // firebase.firestore().useEmulator("localhost", 8080);
@@ -25,11 +26,19 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <Title value="welcome to mapstimator" />
         <ItemList />
       </header>
     </div>
   );
+}
+
+class Title extends React.Component {
+  render() {
+    return(<div class="title-box">
+             <h1 class="top-left">{this.props.value}</h1>
+           </div>);
+  }
 }
 
 class Item extends React.Component {
@@ -70,9 +79,8 @@ class ItemList extends React.Component {
     var to_render = [];
     this.state.values.forEach((value) => {to_render.push(this.renderItem(value))});
     console.log(to_render);
-    return(<ul>
-            {to_render}
-           </ul>);
+    var list = (<ul> {to_render} </ul>);
+    return(list);
   }
 }
 
