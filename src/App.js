@@ -35,8 +35,8 @@ function App() {
 
 class Title extends React.Component {
   render() {
-    return(<div class="title-box">
-             <h1 class="top-left">{this.props.value}</h1>
+    return(<div className="title">
+             <h1 className="title-text">{this.props.value}</h1>
            </div>);
   }
 }
