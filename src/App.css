@@ -15,7 +15,7 @@
 }
 
 .App-header {
-  background: url("https://source.unsplash.com/random/1920x1080/?landscape") #282c34;
+  background: url("https://source.unsplash.com/random/1920x1080/?landscape,hd") #282c34;
   background-size: cover;
   min-height: 100vh;
   display: flex;
@@ -31,14 +31,57 @@
 }
 
 .title {
+  left: 3%;
   position: fixed;
   top: 10%;
-  left: 3%;
 }
 
 .title-text {
   position: relative;
   font-size: 200%;
-  background-color: rgb(211, 211, 211, 0.8);
+}
+
+.left-grey-box {
+  left: 3%;
+  position: fixed;
+  background-color: rgb(211, 211, 211, 0.5);
+  padding: 1%;
+}
+
+#nickname.input-box {
+  font-size: 150%;
   padding: 8px;
+  margin-bottom: 20px;
+}
+
+#session_id.input-box {
+  padding: 6px;
+  font-size: 80%;
+  width: 150px;
+}
+
+#session-table {
+  width: 100%;
+}
+
+.option-title {
+  padding-bottom: 15px;
+}
+
+ h3 {
+   font-size: 130%;
+ }
+
+.main-button {
+  font-size: 80%;
+  padding: 6px;
+}
+
+.table-spacer {
+  width: 20px;
+}
+
+.button-option {
+  background-color: rgb(211, 211, 211, 0.5);
+  padding: 3%;
 }

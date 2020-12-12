@@ -27,60 +27,84 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Title value="welcome to mapstimator" />
-        <ItemList />
+        <SessionSelect />
       </header>
     </div>
   );
 }
 
+class SessionSelect extends React.Component {
+  render() {
+    return(<div className="main-box left-grey-box">
+
+
+             <table id="session-table">
+              <thead>
+                <tr>
+                  <td colSpan="3">
+                    <Nickname allow_entry={true} />
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="button-option">
+                    <h3 className="option-title">host</h3>
+                    <button className="main-button"
+                       type="button"
+                       name="Create Lobby">create lobby</button>
+                  </td>
+                  <td className="table-spacer"/>
+                  <td className="button-option">
+                    <h3 className="option-title">player</h3>
+                    <input className="input-box" id="session_id"
+                           type="text"
+                           placeholder="lobby code"
+                           minLength="6"
+                           maxLength="6"
+                           size="2"
+                     />
+                     <button className="main-button" id="session-id"
+                             type="button"
+                             name="Join Lobby">go</button>
+                  </td>
+                 </tr>
+                </tbody>
+             </table>
+           </div>
+    )
+  }
+}
+
+class Nickname extends React.Component {
+  render_static() {
+    return(<h2>{this.props.name}</h2>);
+  }
+
+  render_input() {
+    return(<input className="input-box" id="nickname"
+                  type="text"
+                  placeholder="nickname"
+                  minLength="1"
+                  maxLength="10"
+           />
+    );
+  }
+
+  render() {
+    if(this.props.allow_entry) {
+      return(<div>{this.render_input()}</div>);
+    } else {
+      return(<div>{this.render_static()}</div>);
+    }
+  }
+}
+
 class Title extends React.Component {
   render() {
-    return(<div className="title">
+    return(<div className="title left-grey-box">
              <h1 className="title-text">{this.props.value}</h1>
            </div>);
-  }
-}
-
-class Item extends React.Component {
-  render() {
-    return(<li>{this.props.value}</li>);
-  };
-}
-
-class ItemList extends React.Component {
-  constructor(props) {
-    super(props);
-    var list = [];
-    this.state = {
-      values: list
-    };
-  }
-
-  componentDidMount() {
-    var db = firebase.firestore();
-    var list = [];
-    db.collection('users').get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        list.push(doc.data());
-        console.log(doc.data());
-      });
-      console.log(list);
-      this.setState({
-        values: list
-      });
-    });
-  }
-
-  renderItem(value) {
-    return(<Item value={value} />);
-  }
-
-  render() {
-    var to_render = [];
-    this.state.values.forEach((value) => {to_render.push(this.renderItem(value))});
-    console.log(to_render);
-    var list = (<ul> {to_render} </ul>);
-    return(list);
   }
 }
 
