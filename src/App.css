@@ -30,6 +30,10 @@
   color: #61dafb;
 }
 
+.container {
+  margin-bottom: 5%;
+}
+
 .title {
   left: 3%;
   position: fixed;
@@ -54,7 +58,11 @@
   margin-bottom: 20px;
 }
 
-#session_id.input-box {
+.input-error {
+  background-color: rgb(255, 179, 179);
+}
+
+#session-id.input-box {
   padding: 6px;
   font-size: 80%;
   width: 150px;
