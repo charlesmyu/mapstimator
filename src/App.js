@@ -180,7 +180,7 @@ class Session extends React.Component {
           console.log('Max players reached in session, cannot join');
           // TODO: Notify user of this issue
         } else if (false) { // Check if username is unique
-
+          // TODO: add this
         } else {
           // Update number of users in sessions
           sessions.doc(doc_id).update({
@@ -195,7 +195,6 @@ class Session extends React.Component {
           console.log('Joined session!');
         }
       });
-      // check if session id in pregame, check if username unique, check if too many users, then allow to join
     };
   };
 
