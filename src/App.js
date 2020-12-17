@@ -1,6 +1,8 @@
 import './App.css';
+
 import React from 'react';
 //import ReactDOM from 'react-dom';
+
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/analytics';
@@ -115,27 +117,34 @@ class Session extends React.Component {
     } else {
       var sessions = db.collection('sessions');
 
-      this.getNewSessionId(sessions, SESSION_ID_LENGTH).then((value) => {
+      this.getNewSessionId(sessions, SESSION_ID_LENGTH).then((session_id) => {
+        // Set new session ID locally first
+        this.setState({session_id: session_id});
+
         // New session id is valid, create session in Firestore
         const {serverTimestamp} = firebase.firestore.FieldValue;
         sessions.add({
-          session_id: value,
+          session_id: session_id,
           owner: this.state.username,
           opened_datetime: serverTimestamp(),
           closed_datetime: null,
           session_status: 'pregame',
           current_game_id: null,
           num_users: 1
-        })
-      }).then(() => {
+        });
+      }).then((value) => {
         // New session created. Update local variables to reflect that
         this.setState({
           local_session_status: 'pregame',
           host: true // User created game, so they are host
         });
-        console.log('Created session!')
+        console.log('Created session!');
       }).catch((err) => {
-        // Something went wrong
+        // Something went wrong, reset state and show error
+        this.setState({
+          session_id: null,
+          local_session_status: 'select'
+        });
         console.log('Could not create session');
         console.log(err);
         // TODO: Add user facing error message
@@ -157,9 +166,10 @@ class Session extends React.Component {
     } else {
       // Try and find session in Firestore (sessions collection)
       sessions.where('session_id', '==', this.state.session_id.toLowerCase()).get().then((value) => {
-        let session;
+        let session, doc_id;
         value.forEach((result) => {
           session = result.data();
+          doc_id = result.id;
         });
         console.log('Found session');
 
@@ -170,10 +180,19 @@ class Session extends React.Component {
           console.log('Max players reached in session, cannot join');
           // TODO: Notify user of this issue
         } else if (false) { // Check if username is unique
-          // TODO: implement this
+
         } else {
-          console.log('Joined session!')
-          // TODO: implement this
+          // Update number of users in sessions
+          sessions.doc(doc_id).update({
+            num_users: session['num_users'] + 1
+          });
+
+          // Set local variables to reflect session joined
+          this.setState({
+            local_session_status: 'pregame',
+            host: false
+          });
+          console.log('Joined session!');
         }
       });
       // check if session id in pregame, check if username unique, check if too many users, then allow to join
@@ -191,13 +210,31 @@ class Session extends React.Component {
     );
   };
 
+  renderPregame() {
+    return(<h1>This is pregame, session ID {this.state.session_id}</h1>);
+  }
+
   render() {
-    return(
-      <div className='container'>
-        <Title value="welcome to mapstimator" />
-        {this.renderSelect()}
-      </div>
-    );
+    if (this.state.local_session_status === 'select') {
+      return(
+        <div className='container'>
+          <Title value="welcome to mapstimator" />
+          {this.renderSelect()}
+        </div>
+      );
+    } else if (this.state.local_session_status === 'pregame') {
+      return(
+        <div className='container'>
+          <Title value="welcome to mapstimator" />
+          {this.renderPregame()}
+        </div>
+      );
+    } else if (this.state.local_session_status === 'ingame') {
+
+    } else if (this.state.local_session_status === 'postgame') {
+
+    };
+    return(<h1>ah shit</h1>);
   };
 };
 
@@ -210,7 +247,10 @@ class SessionSelect extends React.Component {
           <thead>
             <tr>
               <td colSpan="3">
-                <Nickname name={null} onChange={this.props.onUserChange}/>
+                <Nickname
+                  name={null}
+                  onChange={this.props.onUserChange}
+                />
               </td>
             </tr>
           </thead>
@@ -230,7 +270,9 @@ class SessionSelect extends React.Component {
                   <h3 className="option-title">
                     player
                   </h3>
-                  <SessionId onChange={this.props.onSessionIdChange}/>
+                  <SessionId
+                    onChange={this.props.onSessionIdChange}
+                  />
                   <button className="main-button" id="session-id"
                     type="button"
                     name="Join Lobby"
