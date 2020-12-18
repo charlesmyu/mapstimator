@@ -166,24 +166,28 @@ class Session extends React.Component {
     } else {
       // Try and find session in Firestore (sessions collection)
       sessions.where('session_id', '==', this.state.session_id.toLowerCase()).get().then((value) => {
-        let session, doc_id;
+        let session = null;
+        let doc_id = null;
         value.forEach((result) => {
           session = result.data();
           doc_id = result.id;
         });
-        console.log('Found session');
 
-        if (session['session_status'] !== 'pregame') { // Check if session in game
+        if (doc_id === null) {
+          console.log('Session does not exist');
+          // TODO: Notify user of issue
+        } else if (session['session_status'] !== 'pregame') { // Check if session in game
           console.log('Session has game in progress, cannot join');
           // TODO: Notify user of this issue
         } else if (session['users'].split(',').length >= PLAYER_LIMIT) { // Check if too many people
           console.log('Max players reached in session, cannot join');
           // TODO: Notify user of this issue
         } else if (session['users'].includes(this.state.username)) { // Check if username is unique
-          console.log('Username taken, cannot join')
+          console.log('Username taken, cannot join');
           // TODO: Notify user of this issue
         } else {
-          // Update number of users in sessions
+          console.log('Found valid session');
+          // Update list of users in session
           sessions.doc(doc_id).update({
             users: session['users'] + ',' + this.state.username,
           });
@@ -245,30 +249,18 @@ class Session extends React.Component {
 class Pregame extends React.Component {
   render() {
     return(
-      <div className="main-box left-grey-box">
-        <table id="session-table">
-          <thead>
-            <tr>
-              <td colSpan="3">
-                <Nickname
-                  name={this.props.username}
-                />
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <h2>lobby code: {this.props.session_id}</h2>
-              </td>
-              </tr>
-              <tr>
-                <td>
-                  <h2>waiting for host...</h2>
-                </td>
-              </tr>
-          </tbody>
-        </table>
+      <div className="left-grey-box" id="pregame">
+        <Nickname
+          name={this.props.username}
+        />
+        <div className="clearfix" />
+        <div className="button-option float-left" id="pregame-waiting-for-host">
+          <h3 id='pregame-text'>waiting for host...</h3>
+        </div>
+        <div className="button-option float-right" id="pregame-session-id">
+          <h3>lobby code: <i>{this.props.session_id}</i></h3>
+        </div>
+        <div className="clearfix" />
       </div>
     );
   };
@@ -278,48 +270,37 @@ class Pregame extends React.Component {
 class SessionSelect extends React.Component {
   render() {
     return(
-      <div className="main-box left-grey-box">
-        <table id="session-table">
-          <thead>
-            <tr>
-              <td colSpan="3">
-                <Nickname
-                  name={null}
-                  onChange={this.props.onUserChange}
-                />
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="button-option">
-                <h3 className="option-title">host</h3>
-                <button className="main-button"
-                  type="button"
-                  name="Create Lobby"
-                  onClick={this.props.createSession}>
-                    create lobby
-                </button>
-              </td>
-              <td className="table-spacer"/>
-              <td className="button-option">
-                  <h3 className="option-title">
-                    player
-                  </h3>
-                  <SessionId
-                    onChange={this.props.onSessionIdChange}
-                  />
-                  <button className="main-button" id="session-id"
-                    type="button"
-                    name="Join Lobby"
-                    onClick={this.props.joinSession}>
-                      go
-                  </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <div className="left-grey-box" id="select">
+        <Nickname
+          name={null}
+          onChange={this.props.onUserChange}
+        />
+        <div className="clearfix" />
+        <div className="button-option float-left" id="select-create-lobby">
+          <h3 className="option-title">host</h3>
+          <button className="main-button"
+            type="button"
+            name="Create Lobby"
+            onClick={this.props.createSession}>
+              create lobby
+          </button>
+        </div>
+        <div className="button-option float-right" id="select-join-lobby">
+            <h3 className="option-title">
+              player
+            </h3>
+            <SessionId
+              onChange={this.props.onSessionIdChange}
+            />
+            <button className="main-button" id="session-id"
+              type="button"
+              name="Join Lobby"
+              onClick={this.props.joinSession}>
+                go
+            </button>
+          </div>
+          <div className="clearfix" />
+        </div>
     );
   };
 };
@@ -355,7 +336,7 @@ class SessionId extends React.Component {
         placeholder="lobby code"
         minLength={SESSION_ID_LENGTH.toString()}
         maxLength={SESSION_ID_LENGTH.toString()}
-        size="2"
+        size="10"
         onChange = {this.handleChange}
       />
     );
@@ -383,7 +364,7 @@ class Nickname extends React.Component {
 
   render_static() {
     return(
-      <h2>
+      <h2 id="nickname">
         {this.props.name}
       </h2>
     );
@@ -408,7 +389,7 @@ class Nickname extends React.Component {
   render() {
     if(this.props.name === null) {
       return(
-        <div>
+        <div id="nickname-box">
           {this.render_input()}
         </div>
       );
@@ -426,7 +407,7 @@ class Nickname extends React.Component {
 class Title extends React.Component {
   render() {
     return(
-      <div className="title left-grey-box">
+      <div className="title-box left-grey-box">
         <h1 className="title-text">
           {this.props.value}
         </h1>

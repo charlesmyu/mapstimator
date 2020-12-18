@@ -34,7 +34,9 @@
   margin-bottom: 5%;
 }
 
-.title {
+
+
+.title-box {
   left: 3%;
   position: fixed;
   top: 10%;
@@ -48,8 +50,17 @@
 .left-grey-box {
   left: 3%;
   position: fixed;
+
   background-color: rgb(211, 211, 211, 0.5);
-  padding: 1%;
+  padding: 20px;
+}
+
+.clearfix {
+  clear: both;
+}
+
+#nickname-box {
+  float: left;
 }
 
 #nickname.input-box {
@@ -58,38 +69,49 @@
   margin-bottom: 20px;
 }
 
-.input-error {
-  background-color: rgb(255, 179, 179);
-}
-
 #session-id.input-box {
   padding: 6px;
   font-size: 80%;
-  width: 150px;
 }
 
-#session-table {
-  width: 100%;
+.input-error {
+  background-color: rgb(255, 179, 179);
 }
 
 .option-title {
   padding-bottom: 15px;
 }
 
- h3 {
-   font-size: 130%;
- }
-
 .main-button {
   font-size: 80%;
   padding: 6px;
 }
 
-.table-spacer {
-  width: 20px;
-}
-
 .button-option {
   background-color: rgb(211, 211, 211, 0.5);
   padding: 3%;
+}
+
+.float-left {
+  margin-right: 20px;
+  float: left;
+  width: 42%;
+}
+
+.float-right {
+  float: right;
+  width: 42%;
+}
+
+#nickname {
+  font-size: 220%;
+  margin-bottom: 20px;
+}
+
+#pregame {
+  width: 35%;
+}
+
+h3 {
+  font-size: 130%;
 }
