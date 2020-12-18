@@ -130,7 +130,7 @@ class Session extends React.Component {
           closed_datetime: null,
           session_status: 'pregame',
           current_game_id: null,
-          num_users: 1
+          users: this.state.username
         });
       }).then((value) => {
         // New session created. Update local variables to reflect that
@@ -176,15 +176,16 @@ class Session extends React.Component {
         if (session['session_status'] !== 'pregame') { // Check if session in game
           console.log('Session has game in progress, cannot join');
           // TODO: Notify user of this issue
-        } else if (session['num_users'] >= PLAYER_LIMIT) { // Check if too many people
+        } else if (session['users'].split(',').length >= PLAYER_LIMIT) { // Check if too many people
           console.log('Max players reached in session, cannot join');
           // TODO: Notify user of this issue
-        } else if (false) { // Check if username is unique
-          // TODO: add this
+        } else if (session['users'].includes(this.state.username)) { // Check if username is unique
+          console.log('Username taken, cannot join')
+          // TODO: Notify user of this issue
         } else {
           // Update number of users in sessions
           sessions.doc(doc_id).update({
-            num_users: session['num_users'] + 1
+            users: session['users'] + ',' + this.state.username,
           });
 
           // Set local variables to reflect session joined
@@ -210,8 +211,12 @@ class Session extends React.Component {
   };
 
   renderPregame() {
-    return(<h1>This is pregame, session ID {this.state.session_id}</h1>);
-  }
+    if(this.state.host) {
+      return(<h1>This is pregame, session ID {this.state.session_id}</h1>);
+    } else {
+      return(<Pregame username={this.state.username} session_id={this.state.session_id} />);
+    };
+  };
 
   render() {
     if (this.state.local_session_status === 'select') {
@@ -234,6 +239,38 @@ class Session extends React.Component {
 
     };
     return(<h1>ah shit</h1>);
+  };
+};
+
+class Pregame extends React.Component {
+  render() {
+    return(
+      <div className="main-box left-grey-box">
+        <table id="session-table">
+          <thead>
+            <tr>
+              <td colSpan="3">
+                <Nickname
+                  name={this.props.username}
+                />
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <h2>lobby code: {this.props.session_id}</h2>
+              </td>
+              </tr>
+              <tr>
+                <td>
+                  <h2>waiting for host...</h2>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    );
   };
 };
 
