@@ -216,7 +216,7 @@ class Session extends React.Component {
 
   renderPregame() {
     if(this.state.host) {
-      return(<h1>This is pregame, session ID {this.state.session_id}</h1>);
+      return(<PregameHost username={this.state.username} session_id={this.state.session_id} />);
     } else {
       return(<Pregame username={this.state.username} session_id={this.state.session_id} />);
     };
@@ -246,6 +246,36 @@ class Session extends React.Component {
   };
 };
 
+class PregameHost extends React.Component {
+  startGame() {
+    console.log('Starting game...');
+  };
+
+  render() {
+    return(
+      <div className="left-grey-box" id="pregame-host">
+        <Nickname
+          name={this.props.username}
+        />
+        <div className="clearfix" />
+        <div className="button-option float-left" id="pregame-options">
+          <h3 id='pregame-text'>gamemodes coming soon</h3>
+        </div>
+        <div className="button-option float-right" id="pregame-host-session-id">
+          <h3>lobby code: <i>{this.props.session_id}</i></h3>
+        </div>
+        <div className="clearfix" />
+        <button className="main-button" id="start-game"
+          type="button"
+          name="Start Game"
+          onClick={this.startGame}>
+            start
+        </button>
+      </div>
+    );
+  };
+};
+
 class Pregame extends React.Component {
   render() {
     return(
@@ -255,10 +285,10 @@ class Pregame extends React.Component {
         />
         <div className="clearfix" />
         <div className="button-option float-left" id="pregame-waiting-for-host">
-          <h3 id='pregame-text'>waiting for host...</h3>
+          <h3 id='pregame-text'>waiting<br/>for host...</h3>
         </div>
         <div className="button-option float-right" id="pregame-session-id">
-          <h3>lobby code: <i>{this.props.session_id}</i></h3>
+          <h3>lobby code:<br/><i>{this.props.session_id}</i></h3>
         </div>
         <div className="clearfix" />
       </div>

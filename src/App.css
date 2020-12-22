@@ -31,10 +31,8 @@
 }
 
 .container {
-  margin-bottom: 5%;
+  margin-bottom: 20px;
 }
-
-
 
 .title-box {
   left: 3%;
@@ -44,7 +42,7 @@
 
 .title-text {
   position: relative;
-  font-size: 200%;
+  font-size: 60px;
 }
 
 .left-grey-box {
@@ -64,14 +62,14 @@
 }
 
 #nickname.input-box {
-  font-size: 150%;
+  font-size: 40px;
   padding: 8px;
   margin-bottom: 20px;
 }
 
 #session-id.input-box {
   padding: 6px;
-  font-size: 80%;
+  font-size: 21px;
 }
 
 .input-error {
@@ -83,13 +81,13 @@
 }
 
 .main-button {
-  font-size: 80%;
+  font-size: 21px;
   padding: 6px;
 }
 
 .button-option {
   background-color: rgb(211, 211, 211, 0.5);
-  padding: 3%;
+  padding: 16px;
 }
 
 .float-left {
@@ -104,14 +102,22 @@
 }
 
 #nickname {
-  font-size: 220%;
+  font-size: 55px;
   margin-bottom: 20px;
 }
 
+#pregame-host {
+  width: 600px;
+}
+
+#start-game {
+  margin-top: 20px;
+}
+
 #pregame {
-  width: 35%;
+  width: 600px;
 }
 
 h3 {
-  font-size: 130%;
+  font-size: 35px;
 }
