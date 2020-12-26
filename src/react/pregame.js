@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Nickname } from './common.js';
 
 class PregameHost extends React.Component {
@@ -26,10 +26,6 @@ class PregameHost extends React.Component {
           onClick={this.startGame}>
             start
         </button>
-        <UserList
-          session_id={this.props.session_id}
-          db={this.props.db}
-        />
       </div>
     );
   };
@@ -50,35 +46,9 @@ class Pregame extends React.Component {
           <h3>lobby code:<br/><i>{this.props.session_id}</i></h3>
         </div>
         <div className="clearfix" />
-        <UserList
-          session_id={this.props.session_id}
-          db={this.props.db}
-        />
       </div>
     );
   };
-};
-
-// Lists all players in the game
-function UserList(props) {
-  const [users, setUsers] = useState(null);
-
-  useEffect(() => {
-    function handleUsersChange(users) {
-      setUsers(users);
-    };
-
-    var unsubscribe = props.db.collection('sessions').doc(props.session_id).onSnapshot(function(doc) {
-      handleUsersChange(doc.data().users);
-      console.log('Found players: ' + doc.data().users);
-    });
-
-    return unsubscribe;
-  });
-
-  return(
-    <div id="UserList">{users}</div>
-  );
 };
 
 export { Pregame, PregameHost };

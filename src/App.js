@@ -1,5 +1,5 @@
 import './App.css';
-import { Title } from './react/common.js';
+import { UserList } from './react/common.js';
 import { SessionSelect } from './react/select.js';
 import { Pregame, PregameHost } from './react/pregame.js';
 
@@ -69,7 +69,7 @@ class Session extends React.Component {
   // Updates session id. Can be passed as prop to child component
   updateSessionId(session_id) {
     console.log('Session has recieved new session ID');
-    this.setState({session_id: session_id});
+    this.setState({session_id: session_id.toLowerCase()});
   };
 
   // Obtains new session id, which is a random string with length dictated by id_length
@@ -99,7 +99,7 @@ class Session extends React.Component {
     };
 
     console.log("Session ID is " + id.toString());
-    return id;
+    return id.toLowerCase();
   };
 
   getRandomLetter() {
@@ -125,7 +125,7 @@ class Session extends React.Component {
 
         // New session id is valid, create session in Firestore
         const {serverTimestamp} = firebase.firestore.FieldValue;
-        sessions.doc(session_id.toLowerCase()).set({
+        sessions.doc(session_id).set({
           owner: this.state.username,
           opened_datetime: serverTimestamp(),
           session_status: 'pregame',
@@ -175,7 +175,7 @@ class Session extends React.Component {
           } else if (session['users'].split(',').length >= PLAYER_LIMIT) { // Check if too many people
             console.log('Max players reached in session, cannot join');
             // TODO: Notify user of this issue
-          } else if (session['users'].includes(this.state.username)) { // Check if username is unique
+          } else if (session['users'].split(',').includes(this.state.username)) { // Check if username is unique
             console.log('Username taken, cannot join');
             // TODO: Notify user of this issue
           } else {
@@ -214,11 +214,15 @@ class Session extends React.Component {
 
   renderPregame() {
     if(this.state.host) {
-      return(<PregameHost username={this.state.username} session_id={this.state.session_id} db={db} />);
+      return(<PregameHost username={this.state.username} session_id={this.state.session_id} />);
     } else {
-      return(<Pregame username={this.state.username} session_id={this.state.session_id} db={db} />);
+      return(<Pregame username={this.state.username} session_id={this.state.session_id} />);
     };
   };
+
+  renderUserList() {
+    return(<UserList db={db} session_id={this.state.session_id} />);
+  }
 
   render() {
     if (this.state.local_session_status === 'select') {
@@ -233,6 +237,7 @@ class Session extends React.Component {
         <div className='container'>
           <Title value="welcome to mapstimator" />
           {this.renderPregame()}
+          {this.renderUserList()}
         </div>
       );
     } else if (this.state.local_session_status === 'ingame') {
@@ -241,6 +246,19 @@ class Session extends React.Component {
 
     };
     return(<h1>ah shit</h1>);
+  };
+};
+
+// Holds title
+class Title extends React.Component {
+  render() {
+    return(
+      <div className="title-box left-grey-box">
+        <h1 className="title-text">
+          {this.props.value}
+        </h1>
+      </div>
+    );
   };
 };
 

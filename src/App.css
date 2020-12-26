@@ -53,6 +53,15 @@
   padding: 20px;
 }
 
+.right-grey-box {
+  top: 30%;
+  right: 3%;
+  position: fixed;
+
+  background-color: rgb(211, 211, 211, 0.5);
+  padding: 20px;
+}
+
 .clearfix {
   clear: both;
 }

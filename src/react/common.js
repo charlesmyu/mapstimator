@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Contains input box for username
 class Nickname extends React.Component {
@@ -10,7 +10,7 @@ class Nickname extends React.Component {
   };
 
   handleChange(event) {
-    if (event.target.value.length === 0) {
+    if (event.target.value.length === 0 || event.target.value.includes(',')) {
       this.setState({error: true});
     } else {
       this.setState({error: false});
@@ -59,17 +59,40 @@ class Nickname extends React.Component {
   };
 };
 
-// Holds title
-class Title extends React.Component {
-  render() {
-    return(
-      <div className="title-box left-grey-box">
-        <h1 className="title-text">
-          {this.props.value}
-        </h1>
-      </div>
-    );
+
+// Lists all players in the game
+function UserList(props) {
+  const [users, setUsers] = useState(null);
+
+  useEffect(() => {
+    function handleUsersChange(users) {
+      setUsers(users);
+    };
+
+    var unsubscribe = props.db.collection('sessions').doc(props.session_id.toLowerCase()).onSnapshot(function(doc) {
+      handleUsersChange(doc.data().users.split(','));
+      console.log('Found players: ' + doc.data().users.split(','));
+    });
+
+    return unsubscribe;
+  });
+
+  function renderUsers() {
+    if (users === null) {
+      return('Loading...')
+    } else {
+      return users.map((user) => {
+        return(<div className="user-entry" key={user}>{user}</div>);
+      });
+    };
   };
+
+  return(
+    <div className="right-grey-box" id="UserList">
+      <h2>players</h2>
+      {renderUsers()}
+    </div>
+  );
 };
 
-export { Title, Nickname };
+export { Nickname, UserList };
