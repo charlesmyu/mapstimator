@@ -31,7 +31,7 @@ if (!firebase.apps.length) {
 let db = firebase.firestore();
 
 // REMOVE FOR PRODUCTION
-firebase.firestore().useEmulator("localhost", 8080);
+// firebase.firestore().useEmulator("localhost", 8080);
 
 function App() {
   return (
