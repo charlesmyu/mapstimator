@@ -18,7 +18,7 @@ const firebaseConfig = {
 };
 
 let PLAYER_LIMIT = 10; // Max # of players allowed in a session
-let SESSION_ID_LENGTH = 6;
+let SESSION_ID_LENGTH = 6; // # characters used for session ID
 
 // Initialize Firebase & Firestore
 if (!firebase.apps.length) {
@@ -76,13 +76,12 @@ class Session extends React.Component {
       let id = this.getRandomSessionId(id_length);
 
       // Check existing IDs for duplicates
-      sessions.where('session_id', '==', id).where('session_status', '!=', 'closed').get().then((value) => {
-        console.log('Found ' + value.size.toString() + ' matches');
-        if (value.size === 0) { // No duplicates
+      sessions.doc(id).get().then((value) => {
+        if (value.exists) { // Session exists
+          reject('Active matching ID found. Abort session creation');
+        } else { // No session exists with this ID
           console.log('Creating session...');
           resolve(id);
-        } else { // Have duplicates
-          reject('Active matching ID found. Abort session creation');
           // TODO: Implement recursive loop to try again a couple times if needed
         }
       });
@@ -123,13 +122,12 @@ class Session extends React.Component {
 
         // New session id is valid, create session in Firestore
         const {serverTimestamp} = firebase.firestore.FieldValue;
-        sessions.add({
-          session_id: session_id,
+        sessions.doc(session_id.toLowerCase()).set({
           owner: this.state.username,
           opened_datetime: serverTimestamp(),
-          closed_datetime: null,
           session_status: 'pregame',
           current_game_id: null,
+          number_games: 0,
           users: this.state.username
         });
       }).then((value) => {
@@ -165,39 +163,35 @@ class Session extends React.Component {
       // TODO: Notify user of this issue
     } else {
       // Try and find session in Firestore (sessions collection)
-      sessions.where('session_id', '==', this.state.session_id.toLowerCase()).get().then((value) => {
-        let session = null;
-        let doc_id = null;
-        value.forEach((result) => {
-          session = result.data();
-          doc_id = result.id;
-        });
+      sessions.doc(this.state.session_id).get().then((value) => {
+        var session = value.data();
+        if (value.exists) { // Session exists
+          if (session['session_status'] !== 'pregame') { // Check if session in game
+            console.log('Session has game in progress, cannot join');
+            // TODO: Notify user of this issue
+          } else if (session['users'].split(',').length >= PLAYER_LIMIT) { // Check if too many people
+            console.log('Max players reached in session, cannot join');
+            // TODO: Notify user of this issue
+          } else if (session['users'].includes(this.state.username)) { // Check if username is unique
+            console.log('Username taken, cannot join');
+            // TODO: Notify user of this issue
+          } else {
+            console.log('Found valid session');
+            // Update list of users in session
+            sessions.doc(this.state.session_id).update({
+              users: session['users'] + ',' + this.state.username,
+            });
 
-        if (doc_id === null) {
+            // Set local variables to reflect session joined
+            this.setState({
+              local_session_status: 'pregame',
+              host: false
+            });
+            console.log('Joined session!');
+          }
+        } else { // Session does not exist
           console.log('Session does not exist');
           // TODO: Notify user of issue
-        } else if (session['session_status'] !== 'pregame') { // Check if session in game
-          console.log('Session has game in progress, cannot join');
-          // TODO: Notify user of this issue
-        } else if (session['users'].split(',').length >= PLAYER_LIMIT) { // Check if too many people
-          console.log('Max players reached in session, cannot join');
-          // TODO: Notify user of this issue
-        } else if (session['users'].includes(this.state.username)) { // Check if username is unique
-          console.log('Username taken, cannot join');
-          // TODO: Notify user of this issue
-        } else {
-          console.log('Found valid session');
-          // Update list of users in session
-          sessions.doc(doc_id).update({
-            users: session['users'] + ',' + this.state.username,
-          });
-
-          // Set local variables to reflect session joined
-          this.setState({
-            local_session_status: 'pregame',
-            host: false
-          });
-          console.log('Joined session!');
         }
       });
     };
