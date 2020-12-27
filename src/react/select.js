@@ -26,7 +26,7 @@ class SessionSelect extends React.Component {
             </h3>
             <SessionId
               onChange={this.props.onSessionIdChange}
-              sessionIdLength={this.props.sessionIdLength}
+              session_id_length={this.props.session_id_length}
             />
             <button className="main-button" id="session-id"
               type="button"
@@ -51,7 +51,7 @@ class SessionId extends React.Component {
   ;}
 
   handleChange(event) {
-    if (event.target.value.length === this.props.sessionIdLength) {
+    if (event.target.value.length === this.props.session_id_length) {
       this.setState({error: false});
       this.props.onChange(event.target.value);
     } else {
@@ -69,8 +69,8 @@ class SessionId extends React.Component {
       <input className={class_name} id="session-id"
         type="text"
         placeholder="lobby code"
-        minLength={this.props.sessionIdLength.toString()}
-        maxLength={this.props.sessionIdLength.toString()}
+        minLength={this.props.session_id_length.toString()}
+        maxLength={this.props.session_id_length.toString()}
         size="10"
         onChange = {this.handleChange}
       />

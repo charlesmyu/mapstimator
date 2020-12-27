@@ -2,6 +2,7 @@ import './App.css';
 import { UserList } from './react/common.js';
 import { SessionSelect } from './react/select.js';
 import { Pregame, PregameHost } from './react/pregame.js';
+import { Game } from './react/game.js';
 
 import React from 'react';
 //import ReactDOM from 'react-dom';
@@ -50,14 +51,18 @@ class Session extends React.Component {
     this.state = {username: null, // Username of user (chosen under Nickname)
                   session_id: null,
                   current_game_id: null, // ID of game currently being played or last played
-                  local_session_status: 'select', // select, pregame, ingame, postgame
+                  current_game_user_id: null, // ID of game-user document associated with this game and user
+                  local_session_status: 'select', // select, pregame, ingame, postgame, results
                   host: false // Whether user is host of session or not
                 };
 
     this.updateUsername = this.updateUsername.bind(this);
     this.updateSessionId = this.updateSessionId.bind(this);
+    this.updateGameId = this.updateGameId.bind(this);
+    this.updateGameUserId = this.updateGameUserId.bind(this);
     this.createSession = this.createSession.bind(this);
     this.joinSession = this.joinSession.bind(this);
+    this.updateLocalStatus = this.updateLocalStatus.bind(this);
   };
 
   // Updates username. Can be passed as prop to child component
@@ -70,6 +75,21 @@ class Session extends React.Component {
   updateSessionId(session_id) {
     console.log('Session has recieved new session ID');
     this.setState({session_id: session_id.toLowerCase()});
+  };
+
+  updateLocalStatus(status) {
+    console.log('Changing local status to ' + status);
+    this.setState({local_session_status: status});
+  };
+
+  updateGameId(game_id) {
+    console.log('Current game ID is now ' + game_id.toString());
+    this.setState({current_game_id: game_id});
+  };
+
+  updateGameUserId(game_user_id) {
+    console.log('Current game user ID is now ' + game_user_id.toString());
+    this.setState({current_game_user_id: game_user_id});
   };
 
   // Obtains new session id, which is a random string with length dictated by id_length
@@ -191,11 +211,29 @@ class Session extends React.Component {
               host: false
             });
             console.log('Joined session!');
-          }
+            console.log('Waiting for game to start!');
+            const setLocalStatus = this.updateLocalStatus; // Need to set function ahead of time as setState will not be recognized once function finishes (but subscription continues)
+            const setGameId = this.updateGameId;
+            var unsubscribe = db.collection('sessions').doc(this.state.session_id).onSnapshot(function(doc) {
+              if(doc.data()) {
+                if (doc.data().session_status === 'ingame') {
+                  console.log('Game starting!');
+                  setGameId(doc.data().current_game_id);
+                  setLocalStatus('ingame');
+                  console.log('Game started!');
+                };
+              } else {
+                // Game no longer exists (maybe host left), send back to homepage
+                // TODO: Notify user
+                console.log('Game no longer exists. Reloading...');
+                window.location.reload(true);
+              };
+            });
+          };
         } else { // Session does not exist
           console.log('Session does not exist');
           // TODO: Notify user of issue
-        }
+        };
       });
     };
   };
@@ -207,21 +245,33 @@ class Session extends React.Component {
         onSessionIdChange={this.updateSessionId}
         createSession={this.createSession}
         joinSession={this.joinSession}
-        sessionIdLength={SESSION_ID_LENGTH}
+        session_id_length={SESSION_ID_LENGTH}
       />
     );
   };
 
   renderPregame() {
     if(this.state.host) {
-      return(<PregameHost username={this.state.username} session_id={this.state.session_id} />);
+      return(<PregameHost
+              username={this.state.username}
+              session_id={this.state.session_id}
+              updateLocalStatus={this.updateLocalStatus}
+              updateGameId={this.updateGameId}
+              db={db}
+            />);
     } else {
-      return(<Pregame username={this.state.username} session_id={this.state.session_id} />);
+      return(<Pregame
+              username={this.state.username}
+              session_id={this.state.session_id}
+            />);
     };
   };
 
   renderUserList() {
-    return(<UserList db={db} session_id={this.state.session_id} />);
+    return(<UserList
+            db={db}
+            session_id={this.state.session_id}
+          />);
   }
 
   render() {
@@ -241,11 +291,15 @@ class Session extends React.Component {
         </div>
       );
     } else if (this.state.local_session_status === 'ingame') {
-
+      return(
+        <Game />
+      );
     } else if (this.state.local_session_status === 'postgame') {
 
+    } else if (this.state.local_session_status === 'results') {
+
     };
-    return(<h1>ah shit</h1>);
+    return(<h1 className='center-grey-box'>something went wrong...</h1>);
   };
 };
 

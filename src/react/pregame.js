@@ -1,9 +1,43 @@
 import React from 'react';
+import firebase from 'firebase/app';
 import { Nickname } from './common.js';
 
 class PregameHost extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      game_length: 30,
+      gamemode: 'same_location'
+    };
+
+    this.startGame = this.startGame.bind(this);
+  }
+
+  generateRandomPoint() {
+    const plus_or_minus = Math.random() < 0.5 ? -1 : 1;
+    return Math.random() * 91 * plus_or_minus;
+  }
+
   startGame() {
-    console.log('Starting game...');
+    const {serverTimestamp} = firebase.firestore.FieldValue;
+    const increment = firebase.firestore.FieldValue.increment(1);
+    console.log('Attempting to start game...');
+    this.props.db.collection('games').add({
+      session_id: this.props.session_id,
+      start_datetime: serverTimestamp(),
+      game_length: this.state.game_length,
+      gamemode: this.state.gamemode,
+      location: new firebase.firestore.GeoPoint(this.generateRandomPoint(), this.generateRandomPoint())
+    }).then((docRef) => {
+      this.props.db.collection('sessions').doc(this.props.session_id).update({
+        session_status: 'ingame',
+        current_game_id: docRef.id,
+        number_games: increment
+      });
+      this.props.updateGameId(docRef.id);
+      this.props.updateLocalStatus('ingame');
+      console.log('Game started!');
+    });
   };
 
   render() {
