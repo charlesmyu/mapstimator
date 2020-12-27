@@ -79,7 +79,7 @@ function UserList(props) {
 
   function renderUsers() {
     if (users === null) {
-      return('Loading...')
+      return('loading...')
     } else {
       return users.map((user) => {
         return(<div className="user-entry" key={user}>{user}</div>);

@@ -52,7 +52,7 @@ class Session extends React.Component {
                   session_id: null,
                   current_game_id: null, // ID of game currently being played or last played
                   current_game_user_id: null, // ID of game-user document associated with this game and user
-                  local_session_status: 'select', // select, pregame, ingame, postgame, results
+                  local_session_status: 'select', // select, pregame, ingame, postgame, results, disconnected
                   host: false // Whether user is host of session or not
                 };
 
@@ -224,9 +224,8 @@ class Session extends React.Component {
                 };
               } else {
                 // Game no longer exists (maybe host left), send back to homepage
-                // TODO: Notify user
                 console.log('Game no longer exists. Reloading...');
-                window.location.reload(true);
+                setLocalStatus('disconnected');
               };
             });
           };
@@ -298,6 +297,19 @@ class Session extends React.Component {
 
     } else if (this.state.local_session_status === 'results') {
 
+    } else if (this.state.local_session_status === 'disconnected') {
+      return(
+        <div className="center-grey-box">
+          <h3>lobby was destroyed - refresh to create new lobby</h3>
+          <br />
+          <button className="main-button" id="start-game"
+            type="button"
+            name="Reload"
+            onClick={() => {window.location.reload();}}>
+              reload
+          </button>
+        </div>
+      );
     };
     return(<h1 className='center-grey-box'>something went wrong...</h1>);
   };
