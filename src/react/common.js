@@ -71,7 +71,6 @@ function UserList(props) {
 
     var unsubscribe = props.db.collection('sessions').doc(props.session_id.toLowerCase()).onSnapshot(function(doc) {
       handleUsersChange(doc.data().users.split(','));
-      console.log('Found players: ' + doc.data().users.split(','));
     });
 
     return unsubscribe;
