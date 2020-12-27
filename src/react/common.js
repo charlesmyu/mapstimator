@@ -10,7 +10,7 @@ class Nickname extends React.Component {
   };
 
   handleChange(event) {
-    if (event.target.value.length === 0 || event.target.value.includes(',')) {
+    if (event.target.value.length === 0) {
       this.setState({error: true});
     } else {
       this.setState({error: false});
@@ -70,7 +70,7 @@ function UserList(props) {
     };
 
     var unsubscribe = props.db.collection('sessions').doc(props.session_id.toLowerCase()).onSnapshot(function(doc) {
-      handleUsersChange(doc.data().users.split(','));
+      handleUsersChange(doc.data().users);
     });
 
     return unsubscribe;

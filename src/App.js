@@ -151,7 +151,7 @@ class Session extends React.Component {
           session_status: 'pregame',
           current_game_id: null,
           number_games: 0,
-          users: this.state.username
+          users: firebase.firestore.FieldValue.arrayUnion(this.state.username)
         });
       }).then((value) => {
         // New session created. Update local variables to reflect that
@@ -192,17 +192,17 @@ class Session extends React.Component {
           if (session['session_status'] !== 'pregame') { // Check if session in game
             console.log('Session has game in progress, cannot join');
             // TODO: Notify user of this issue
-          } else if (session['users'].split(',').length >= PLAYER_LIMIT) { // Check if too many people
+          } else if (session['users'].length >= PLAYER_LIMIT) { // Check if too many people
             console.log('Max players reached in session, cannot join');
             // TODO: Notify user of this issue
-          } else if (session['users'].split(',').includes(this.state.username)) { // Check if username is unique
+          } else if (session['users'].includes(this.state.username)) { // Check if username is unique
             console.log('Username taken, cannot join');
             // TODO: Notify user of this issue
           } else {
             console.log('Found valid session');
             // Update list of users in session
             sessions.doc(this.state.session_id).update({
-              users: session['users'] + ',' + this.state.username,
+              users: firebase.firestore.FieldValue.arrayUnion(this.state.username),
             });
 
             // Set local variables to reflect session joined
