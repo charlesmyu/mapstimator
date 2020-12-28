@@ -237,7 +237,9 @@ class Session extends React.Component {
               // Note: May not work correctly on mobile due as unload is not commonly called
               event.preventDefault();
               unsubscribe();
-              var status = navigator.sendBeacon('http://localhost:5001/mapstimator/us-central1/removeUser?username='+username+'&session_id='+session_id, '');
+              var url = 'https://us-central1-mapstimator.cloudfunctions.net/removeUser';
+              // var url = 'http://localhost:5001/mapstimator/us-central1/removeUser';
+              var status = navigator.sendBeacon(url + '?username='+username+'&session_id='+session_id, '');
               console.log('Unsubscribed and removed user! Status: ' + status);
             });
           };
