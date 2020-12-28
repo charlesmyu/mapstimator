@@ -228,6 +228,18 @@ class Session extends React.Component {
                 setLocalStatus('disconnected');
               };
             });
+
+            console.log('Adding onunload event listener');
+            var session_id = this.state.session_id;
+            var username = this.state.username;
+            window.addEventListener('unload', function(event) {
+              // All code here cannot be async, otherwise will terminate before completion
+              // Note: May not work correctly on mobile due as unload is not commonly called
+              event.preventDefault();
+              unsubscribe();
+              var status = navigator.sendBeacon('http://localhost:5001/mapstimator/us-central1/removeUser?username='+username+'&session_id='+session_id, '');
+              console.log('Unsubscribed and removed user! Status: ' + status);
+            });
           };
         } else { // Session does not exist
           console.log('Session does not exist');
