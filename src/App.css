@@ -54,7 +54,6 @@
 }
 
 .right-grey-box {
-  top: 30%;
   right: 3%;
   position: fixed;
 
@@ -65,6 +64,16 @@
 .center-grey-box {
   background-color: rgb(211, 211, 211, 0.5);
   padding: 20px;
+}
+
+#user-list {
+  top: 30%;
+}
+
+#made-by {
+  bottom: 5%;
+  font-size: 20px;
+  padding: 10px;
 }
 
 .clearfix {

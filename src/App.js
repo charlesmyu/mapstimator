@@ -44,6 +44,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Session />
+        <p className="right-grey-box" id="made-by">made by charles yu</p>
       </header>
     </div>
   );

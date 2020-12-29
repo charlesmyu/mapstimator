@@ -87,7 +87,7 @@ function UserList(props) {
   };
 
   return(
-    <div className="right-grey-box" id="UserList">
+    <div className="right-grey-box" id="user-list">
       <h2>players</h2>
       {renderUsers()}
     </div>
