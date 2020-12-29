@@ -31,8 +31,13 @@ if (!firebase.apps.length) {
 
 let db = firebase.firestore();
 
-// REMOVE FOR PRODUCTION
-// firebase.firestore().useEmulator("localhost", 8080);
+// Deal with emulators
+var cloud_functions_url = 'https://us-central1-mapstimator.cloudfunctions.net';
+if (window.location.hostname === 'localhost') {
+  console.log('Localhost detected, using emulators...')
+  firebase.firestore().useEmulator("localhost", 8080);
+  cloud_functions_url = 'http://localhost:5001/mapstimator/us-central1';
+}
 
 function App() {
   return (
@@ -127,8 +132,7 @@ class Session extends React.Component {
     return alphabet[Math.floor(Math.random() * alphabet.length)];
   };
 
-  // Creates session, with user being created as host. Can be passed as prop to
-  // child component
+  // Creates session, with user being created as host. Can be passed as prop to child component
   createSession() {
     console.log("Attempting to create session...");
 
@@ -160,6 +164,16 @@ class Session extends React.Component {
           host: true // User created game, so they are host
         });
         console.log('Created session!');
+
+        console.log('Creating onunload event listener...');
+        var session_id = this.state.session_id;
+        window.addEventListener('unload', function(event) {
+          // All code here cannot be async, otherwise will terminate before completion
+          // Note: May not work correctly on mobile due as unload will not always be called
+          event.preventDefault();
+          var status = navigator.sendBeacon(cloud_functions_url+'/removeSession?session_id='+session_id, '');
+          console.log('Removed session! Status: ' + status);
+        });
       }).catch((err) => {
         // Something went wrong, reset state and show error
         this.setState({
@@ -234,12 +248,10 @@ class Session extends React.Component {
             var username = this.state.username;
             window.addEventListener('unload', function(event) {
               // All code here cannot be async, otherwise will terminate before completion
-              // Note: May not work correctly on mobile due as unload is not commonly called
+              // Note: May not work correctly on mobile due as unload will not always be called
               event.preventDefault();
               unsubscribe();
-              var url = 'https://us-central1-mapstimator.cloudfunctions.net/removeUser';
-              // var url = 'http://localhost:5001/mapstimator/us-central1/removeUser';
-              var status = navigator.sendBeacon(url + '?username='+username+'&session_id='+session_id, '');
+              var status = navigator.sendBeacon(cloud_functions_url+'/removeUser?username='+username+'&session_id='+session_id, '');
               console.log('Unsubscribed and removed user! Status: ' + status);
             });
           };
