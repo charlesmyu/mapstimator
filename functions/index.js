@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-exports.removeUser = functions.https.onRequest(async (req, res) => {
+exports.removeUser = functions.https.onRequest((req, res) => {
   // Remove user from session as they have left the game
 
   const session_id = req.query.session_id;
@@ -18,6 +18,8 @@ exports.removeUser = functions.https.onRequest(async (req, res) => {
     console.log('Error on deleting user: ' + error);
     return { result: 'Error on deleting user: ' + error };
   });
+
+  res.json({result: 'Executing task'});
 });
 
 exports.removeSession = functions.https.onRequest(async (req, res) => {
