@@ -22,21 +22,29 @@ class PregameHost extends React.Component {
     const {serverTimestamp} = firebase.firestore.FieldValue;
     const increment = firebase.firestore.FieldValue.increment(1);
     console.log('Attempting to start game...');
-    this.props.db.collection('games').add({
+    // add gamemode and other variables as required for specified gamemode
+    var game = {
       session_id: this.props.session_id,
       start_datetime: serverTimestamp(),
       game_length: this.state.game_length,
       gamemode: this.state.gamemode,
-      location: new firebase.firestore.GeoPoint(this.generateRandomPoint(), this.generateRandomPoint())
-    }).then((docRef) => {
+    }
+
+    // Add gamemodes here
+    if (this.state.gamemode === 'same_location') {
+      game['target_coordinates'] = new firebase.firestore.GeoPoint(this.generateRandomPoint(), this.generateRandomPoint());
+    }
+
+    this.props.db.collection('games').add(game).then((docRef) => {
       this.props.db.collection('sessions').doc(this.props.session_id).update({
         session_status: 'ingame',
         current_game_id: docRef.id,
         number_games: increment
+      }).then((result) => {
+        this.props.updateGameId(docRef.id);
+        this.props.updateLocalStatus('ingame');
+        console.log('Game created! Handing off...');
       });
-      this.props.updateGameId(docRef.id);
-      this.props.updateLocalStatus('ingame');
-      console.log('Game started!');
     });
   };
 
