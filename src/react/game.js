@@ -8,6 +8,12 @@ class Game extends React.Component {
       target_coordinates: null,
       user_game: null
     };
+
+    this.updateTargetCoordinates = this.updateTargetCoordinates.bind(this);
+  }
+
+  updateTargetCoordinates(target_coordinates) {
+    this.setState({target_coordinates: target_coordinates});
   }
 
   componentDidMount() {
@@ -37,6 +43,7 @@ class Game extends React.Component {
       })
     }).then((result) => {
       this.setState({user_game: result.id});
+      console.log('Rendering Streetview...')
     });
   };
 
@@ -47,14 +54,15 @@ class Game extends React.Component {
           <GoogleStreetview
             db={this.props.db}
             user_game={this.state.user_game}
-            apiKey={'AIzaSyBo8Wc9Dbhzlfl3niaSOli-Jvpp3Dyy9r8'}
-            streetViewPanoramaOptions={{
+            api_key={'AIzaSyBo8Wc9Dbhzlfl3niaSOli-Jvpp3Dyy9r8'}
+            street_view_panorama_options={{
               addressControl: false,
               fullscreenControl: false,
               showRoadLabels: false,
               enableCloseButton: false,
             }}
             location={{lat: this.state.target_coordinates['latitude'], lng: this.state.target_coordinates['longitude']}}
+            updateTargetCoordinates={this.updateTargetCoordinates}
           />
         </div>
       );

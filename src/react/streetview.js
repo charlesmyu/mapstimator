@@ -30,12 +30,21 @@ class GoogleStreetview extends React.Component {
       const service = new this.props.googleMaps.StreetViewService();
       this.streetView = new this.props.googleMaps.StreetViewPanorama(
         canvas,
-        this.props.streetViewPanoramaOptions,
+        this.props.street_view_panorama_options,
       );
 
+      // Not all lat/lng have streetview. Use getPanorama to find nearest valid streetview coordinates
+      // Note that using 'outdoor' allows us to skip over photospheres (those are no fun) 
       service.getPanorama({ location: this.props.location, preference: 'nearest', radius: 10000000000, source: 'outdoor' }).then((response) => {
+        // When valid streetview coordinates found, set coordinates as new target coordinates
         console.log('Setting valid location...');
         this.streetView.setPano(response.data.location.pano);
+
+        this.props.db.collection('user-games').doc(this.props.user_game).update({
+          target_coordinates: new firebase.firestore.GeoPoint(response.data.location.latLng.lat(), response.data.location.latLng.lng())
+        });
+
+        this.props.updateTargetCoordinates(new firebase.firestore.GeoPoint(response.data.location.latLng.lat(), response.data.location.latLng.lng()));
       });
 
       this.streetView.addListener('position_changed', () => {
@@ -47,10 +56,10 @@ class GoogleStreetview extends React.Component {
     }
     if (
       this.streetView !== null &&
-      this.props.streetViewPanoramaOptions &&
+      this.props.street_view_panorama_options &&
       !isEqual(
-        this.props.streetViewPanoramaOptions,
-        prevProps.streetViewPanoramaOptions,
+        this.props.street_view_panorama_options,
+        prevProps.street_view_panorama_options,
       )
     ) {
       const {
@@ -58,13 +67,13 @@ class GoogleStreetview extends React.Component {
         pov,
         position,
         ...otherOptions
-      } = this.props.streetViewPanoramaOptions;
+      } = this.props.street_view_panorama_optionss;
       const {
         zoom: prevZoom,
         pov: prevPov,
         position: prevPos,
         ...prevOtherOptions
-      } = prevProps.streetViewPanoramaOptions;
+      } = prevProps.street_view_panorama_options;
       if (!isEqual(zoom, prevZoom)) {
         this.streetView.setZoom(zoom);
       }
@@ -85,13 +94,13 @@ class GoogleStreetview extends React.Component {
   }
 }
 
-function mapScriptsToProps({ apiKey }) {
-  if (!apiKey) return {};
+function mapScriptsToProps({ api_key }) {
+  if (!api_key) return {};
 
   return {
     googleMaps: {
       globalPath: 'google.maps',
-      url: `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=beta`,
+      url: `https://maps.googleapis.com/maps/api/js?key=${api_key}&v=beta`,
       jsonp: true,
     },
   };
