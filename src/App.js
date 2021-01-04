@@ -57,7 +57,6 @@ class Session extends React.Component {
     this.state = {username: null, // Username of user (chosen under Nickname)
                   session_id: null,
                   current_game_id: null, // ID of game currently being played or last played
-                  current_game_user_id: null, // ID of game-user document associated with this game and user
                   local_session_status: 'select', // select, pregame, ingame, postgame, results, disconnected
                   host: false // Whether user is host of session or not
                 };
@@ -65,7 +64,6 @@ class Session extends React.Component {
     this.updateUsername = this.updateUsername.bind(this);
     this.updateSessionId = this.updateSessionId.bind(this);
     this.updateGameId = this.updateGameId.bind(this);
-    this.updateGameUserId = this.updateGameUserId.bind(this);
     this.createSession = this.createSession.bind(this);
     this.joinSession = this.joinSession.bind(this);
     this.updateLocalStatus = this.updateLocalStatus.bind(this);
@@ -91,11 +89,6 @@ class Session extends React.Component {
   updateGameId(game_id) {
     console.log('Current game ID is now ' + game_id.toString());
     this.setState({current_game_id: game_id});
-  };
-
-  updateGameUserId(game_user_id) {
-    console.log('Current game user ID is now ' + game_user_id.toString());
-    this.setState({current_game_user_id: game_user_id});
   };
 
   // Obtains new session id, which is a random string with length dictated by id_length
@@ -232,10 +225,10 @@ class Session extends React.Component {
             var unsubscribe = db.collection('sessions').doc(this.state.session_id).onSnapshot(function(doc) {
               if(doc.data()) {
                 if (doc.data().session_status === 'ingame') {
-                  console.log('Game starting!');
+                  console.log('Detected game start! Attempting to start game locally...');
                   setGameId(doc.data().current_game_id);
                   setLocalStatus('ingame');
-                  console.log('Game started!');
+                  console.log('Handing off...');
                 };
               } else {
                 // Game no longer exists (maybe host left), send back to homepage
@@ -318,7 +311,11 @@ class Session extends React.Component {
       );
     } else if (this.state.local_session_status === 'ingame') {
       return(
-        <Game />
+        <Game
+          db={db}
+          game_id={this.state.current_game_id}
+          username={this.state.username}
+        />
       );
     } else if (this.state.local_session_status === 'postgame') {
 

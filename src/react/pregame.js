@@ -28,6 +28,7 @@ class PregameHost extends React.Component {
       start_datetime: serverTimestamp(),
       game_length: this.state.game_length,
       gamemode: this.state.gamemode,
+      status: 'ingame'
     }
 
     // Add gamemodes here
