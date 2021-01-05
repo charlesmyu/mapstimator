@@ -15,7 +15,7 @@ class PregameHost extends React.Component {
 
   generateRandomPoint() {
     const plus_or_minus = Math.random() < 0.5 ? -1 : 1;
-    return Math.random() * 91 * plus_or_minus;
+    return Math.random() * 90 * plus_or_minus;
   }
 
   startGame() {

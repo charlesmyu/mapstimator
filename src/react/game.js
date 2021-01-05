@@ -1,6 +1,7 @@
 import React from 'react';
 import asyncLoading from 'react-async-loader';
 import GoogleStreetview from './streetview.js';
+import GoogleMaps from './map.js';
 
 class Game extends React.Component {
   constructor(props) {
@@ -49,7 +50,7 @@ class Game extends React.Component {
   };
 
   render() {
-    if(this.state.target_coordinates !== null) {
+    if(this.state.target_coordinates !== null && this.state.user_game !== null) {
       return(
         <div style={{ height: '100vh', width: '100%'}}>
           <GoogleStreetview
@@ -60,10 +61,22 @@ class Game extends React.Component {
               addressControl: false,
               fullscreenControl: false,
               showRoadLabels: false,
-              enableCloseButton: false,
+              enableCloseButton: false
             }}
             location={{lat: this.state.target_coordinates['latitude'], lng: this.state.target_coordinates['longitude']}}
             updateTargetCoordinates={this.updateTargetCoordinates}
+          />
+          <GoogleMaps
+            db={this.props.db}
+            user_game={this.state.user_game}
+            googleMaps={this.props.googleMaps}
+            map_options={{
+              zoom: 1,
+              center: { lat: 0, lng: 0 },
+              mapTypeControl: false,
+              fullscreenControl: false,
+              streetViewControl: false
+            }}
           />
         </div>
       );

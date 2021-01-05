@@ -124,6 +124,18 @@
   width: 42%;
 }
 
+.map-container {
+  z-index: 5;
+  position: absolute;
+  float: right;
+  bottom: 0px;
+  right: 0px;
+  height: 40%;
+  width: 35%;
+  border-top: 2px solid grey;
+  border-left: 2px solid grey;
+}
+
 #nickname {
   font-size: 55px;
   margin-bottom: 20px;
