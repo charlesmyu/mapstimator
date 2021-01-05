@@ -1,7 +1,6 @@
 // Modified from alexus37/react-google-streetview
 
 import React from 'react';
-import asyncLoading from 'react-async-loader';
 import isEqual from 'lodash.isequal';
 import firebase from 'firebase/app';
 
@@ -34,7 +33,7 @@ class GoogleStreetview extends React.Component {
       );
 
       // Not all lat/lng have streetview. Use getPanorama to find nearest valid streetview coordinates
-      // Note that using 'outdoor' allows us to skip over photospheres (those are no fun) 
+      // Note that using 'outdoor' allows us to skip over photospheres (those are no fun)
       service.getPanorama({ location: this.props.location, preference: 'nearest', radius: 10000000000, source: 'outdoor' }).then((response) => {
         // When valid streetview coordinates found, set coordinates as new target coordinates
         console.log('Setting valid location...');
@@ -67,7 +66,7 @@ class GoogleStreetview extends React.Component {
         pov,
         position,
         ...otherOptions
-      } = this.props.street_view_panorama_optionss;
+      } = this.props.street_view_panorama_options;
       const {
         zoom: prevZoom,
         pov: prevPov,
@@ -94,16 +93,4 @@ class GoogleStreetview extends React.Component {
   }
 }
 
-function mapScriptsToProps({ api_key }) {
-  if (!api_key) return {};
-
-  return {
-    googleMaps: {
-      globalPath: 'google.maps',
-      url: `https://maps.googleapis.com/maps/api/js?key=${api_key}&v=beta`,
-      jsonp: true,
-    },
-  };
-}
-
-export default asyncLoading(mapScriptsToProps)(GoogleStreetview);
+export default GoogleStreetview;

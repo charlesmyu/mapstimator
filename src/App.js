@@ -2,7 +2,7 @@ import './App.css';
 import { UserList } from './react/common.js';
 import { SessionSelect } from './react/select.js';
 import { Pregame, PregameHost } from './react/pregame.js';
-import { Game } from './react/game.js';
+import Game from './react/game.js';
 
 import React from 'react';
 //import ReactDOM from 'react-dom';
@@ -315,6 +315,7 @@ class Session extends React.Component {
           db={db}
           game_id={this.state.current_game_id}
           username={this.state.username}
+          api_key={'AIzaSyBo8Wc9Dbhzlfl3niaSOli-Jvpp3Dyy9r8'}
         />
       );
     } else if (this.state.local_session_status === 'postgame') {

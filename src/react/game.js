@@ -1,4 +1,5 @@
 import React from 'react';
+import asyncLoading from 'react-async-loader';
 import GoogleStreetview from './streetview.js';
 
 class Game extends React.Component {
@@ -54,7 +55,7 @@ class Game extends React.Component {
           <GoogleStreetview
             db={this.props.db}
             user_game={this.state.user_game}
-            api_key={'AIzaSyBo8Wc9Dbhzlfl3niaSOli-Jvpp3Dyy9r8'}
+            googleMaps = {this.props.googleMaps}
             street_view_panorama_options={{
               addressControl: false,
               fullscreenControl: false,
@@ -72,4 +73,16 @@ class Game extends React.Component {
   }
 }
 
-export { Game };
+function mapScriptsToProps({ api_key }) {
+  if (!api_key) return {};
+
+  return {
+    googleMaps: {
+      globalPath: 'google.maps',
+      url: `https://maps.googleapis.com/maps/api/js?key=${api_key}&v=beta`,
+      jsonp: true,
+    },
+  };
+}
+
+export default asyncLoading (mapScriptsToProps)(Game);
