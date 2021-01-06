@@ -6,7 +6,7 @@ class PregameHost extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      game_length: 30,
+      game_length: 10, // Length of game in seconds
       gamemode: 'same_location'
     };
 

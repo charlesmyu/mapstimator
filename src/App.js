@@ -227,10 +227,12 @@ class Session extends React.Component {
                 if (doc.data().session_status === 'ingame') {
                   console.log('Detected game start! Attempting to start game locally...');
                   setGameId(doc.data().current_game_id);
-                  setLocalStatus('ingame');
                   console.log('Handing off...');
                 };
-              } else {
+
+                console.log('Change detected, switching to ' + doc.data().session_status);
+                setLocalStatus(doc.data().session_status);
+              } else {;
                 // Game no longer exists (maybe host left), send back to homepage
                 console.log('Game no longer exists. Reloading...');
                 setLocalStatus('disconnected');
@@ -313,6 +315,7 @@ class Session extends React.Component {
       return(
         <Game
           db={db}
+          session_id={this.state.session_id}
           game_id={this.state.current_game_id}
           username={this.state.username}
           api_key={'AIzaSyBo8Wc9Dbhzlfl3niaSOli-Jvpp3Dyy9r8'}
@@ -322,15 +325,15 @@ class Session extends React.Component {
       );
     } else if (this.state.local_session_status === 'spectating') {
       return(
-        <h1>spectating</h1>
+        <h1 className="left-grey-box">spectating</h1>
       );
     } else if (this.state.local_session_status === 'postgame') {
       return(
-        <h1>postgame</h1>
+        <h1 className="left-grey-box">postgame</h1>
       );
     } else if (this.state.local_session_status === 'results') {
       return(
-        <h1>results</h1>
+        <h1 className="left-grey-box">results</h1>
       );
     } else if (this.state.local_session_status === 'disconnected') {
       return(
