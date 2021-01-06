@@ -316,12 +316,22 @@ class Session extends React.Component {
           game_id={this.state.current_game_id}
           username={this.state.username}
           api_key={'AIzaSyBo8Wc9Dbhzlfl3niaSOli-Jvpp3Dyy9r8'}
+          host={this.state.host}
+          updateLocalStatus={this.updateLocalStatus}
         />
       );
+    } else if (this.state.local_session_status === 'spectating') {
+      return(
+        <h1>spectating</h1>
+      );
     } else if (this.state.local_session_status === 'postgame') {
-
+      return(
+        <h1>postgame</h1>
+      );
     } else if (this.state.local_session_status === 'results') {
-
+      return(
+        <h1>results</h1>
+      );
     } else if (this.state.local_session_status === 'disconnected') {
       return(
         <div className="center-grey-box">

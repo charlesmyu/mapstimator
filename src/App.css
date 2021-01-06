@@ -136,6 +136,40 @@
   border-left: 2px solid grey;
 }
 
+#submit-estimate-button {
+  z-index: 5;
+  position: absolute;
+  float: right;
+  bottom: 0px;
+  right: 0px;
+  height: 30px;
+  width: 100%;
+  padding: 0px;
+}
+
+#minimize-map-button {
+  z-index: 6;
+  position: absolute;
+  height: 25px;
+  width: 25px;
+  padding: 0px;
+  left: 0px;
+}
+
+#maximize-map-button {
+  z-index: 5;
+  position: absolute;
+  height: 25px;
+  width: 25px;
+  padding: 0px;
+  bottom: 0px;
+  right: 0px;
+}
+
+#map {
+  height: calc(100% - 30px);
+}
+
 #nickname {
   font-size: 55px;
   margin-bottom: 20px;
