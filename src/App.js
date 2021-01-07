@@ -3,6 +3,7 @@ import { UserList } from './react/common.js';
 import { SessionSelect } from './react/select.js';
 import { Pregame, PregameHost } from './react/pregame.js';
 import Game from './react/game.js';
+import { Result } from './react/result.js';
 
 import React from 'react';
 //import ReactDOM from 'react-dom';
@@ -329,11 +330,16 @@ class Session extends React.Component {
       );
     } else if (this.state.local_session_status === 'postgame') {
       return(
-        <h1 className="left-grey-box">postgame</h1>
+        <h1 className="left-grey-box">loading...</h1>
       );
     } else if (this.state.local_session_status === 'results') {
       return(
-        <h1 className="left-grey-box">results</h1>
+        <Result
+          db={db}
+          game_id={this.state.current_game_id}
+          host={this.state.host}
+          updateLocalStatus={this.updateLocalStatus}
+        />
       );
     } else if (this.state.local_session_status === 'disconnected') {
       return(

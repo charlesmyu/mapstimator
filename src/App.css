@@ -190,3 +190,21 @@
 h3 {
   font-size: 35px;
 }
+
+#results-table {
+  margin-top: 15px;
+}
+
+#new-game-button {
+  margin-top: 20px;
+  margin-right: 10px;
+}
+
+table, th, td {
+  border: 1px black solid;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+}
