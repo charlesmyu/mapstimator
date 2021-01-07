@@ -11,6 +11,7 @@ class PregameHost extends React.Component {
     };
 
     this.startGame = this.startGame.bind(this);
+    this.handleTimeLimitChange = this.handleTimeLimitChange.bind(this);
   }
 
   generateRandomPoint() {
@@ -49,6 +50,13 @@ class PregameHost extends React.Component {
     });
   };
 
+  handleTimeLimitChange(event) {
+    if(event.target.value !== '0' && event.target.value !=="") {
+      this.setState({game_length: parseFloat(event.target.value) * 60.0});
+      console.log(event.target.value);
+    }
+  };
+
   render() {
     return(
       <div className="left-grey-box" id="pregame-host">
@@ -57,7 +65,14 @@ class PregameHost extends React.Component {
         />
         <div className="clearfix" />
         <div className="button-option float-left" id="pregame-options">
-          <h3 id='pregame-text'>gamemodes coming soon</h3>
+          <h3 className="game-options">Time Limit: </h3>
+          <input className="game-options" id="time-limit-input"
+            type="number"
+            defaultValue="10"
+            size="2"
+            onChange = {this.handleTimeLimitChange}
+          />
+          <h3 className="game-options" id="game-options-text"> min</h3>
         </div>
         <div className="button-option float-right" id="pregame-host-session-id">
           <h3>lobby code: <i>{this.props.session_id}</i></h3>

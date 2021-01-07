@@ -187,6 +187,20 @@
   width: 600px;
 }
 
+#time-limit-input {
+  padding: 5px;
+  font-size: 35px;
+  width: 65px;
+}
+
+#game-options-text {
+  font-weight: lighter;
+}
+
+.game-options {
+  display: inline;
+}
+
 h3 {
   font-size: 35px;
 }

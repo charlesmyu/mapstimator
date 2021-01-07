@@ -55,7 +55,7 @@ class Result extends React.Component {
 
       this.state.positions.forEach((user) => {
         count++;
-        to_render.push(<IndividualResult position={count} username={user.username} score={user.score} />);
+        to_render.push(<IndividualResult key={user.username} position={count} username={user.username} score={user.score} />);
       })
 
       return(
