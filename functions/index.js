@@ -39,6 +39,19 @@ exports.removeSession = functions.https.onRequest(async (req, res) => {
     owner: session_info.data().owner
   });
 
+  console.log('Looking for game in progress...');
+  let current_game_id = session_info.data().current_game_id;
+  if(current_game_id) {
+    let game_details = await admin.firestore().collection('games').doc(current_game_id).get();
+    // if game is 'ingame', game is being abandoned mid-match, so mark it as such
+    if(game_details.data().status === 'ingame') {
+      console.log('In progress game found. Marking as abandoned.');
+      admin.firestore().collection('games').doc(current_game_id).update({
+        status: 'abandoned'
+      });
+    }
+  }
+
   // Delete session
   const delete_session = await admin.firestore().collection('sessions').doc(session_id).delete();
 
