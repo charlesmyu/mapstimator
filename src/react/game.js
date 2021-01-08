@@ -77,54 +77,68 @@ class Game extends React.Component {
       if(this.props.host) {
         this.props.db.collection('games').doc(this.props.game_id).get().then((value) => {
           var game_length = value.data().game_length;
-          setTimeout(() => {
+          var game_timer = setTimeout(() => {
             console.log("Time's up! Ending game...");
-            this.props.db.collection('sessions').doc(this.props.session_id).update({
-              session_status: 'postgame'
-            });
-            this.props.updateLocalStatus('postgame');
-
-            this.props.db.collection('games').doc(this.props.game_id).update({
-              status: 'complete'
-            });
-
-            this.props.db.collection('user-games').where('game_id', '==', this.props.game_id).get().then((querySnapshot) => {
-              var arrayQuerySnapshot = [];
-
-              querySnapshot.forEach((doc) => {
-                arrayQuerySnapshot.push(doc);
-              });
-
-              let calc_results = arrayQuerySnapshot.map((doc) => {
-                var target_coordinates = doc.data().target_coordinates;
-                var guess_coordinates = doc.data().guess_coordinates;
-                var guess_error = null;
-                var user_score = 1;
-
-                if(guess_coordinates !== null) {
-                  guess_error = this.getDistanceFromLatLonInKm(target_coordinates['latitude'], target_coordinates['longitude'], guess_coordinates['latitude'], guess_coordinates['longitude']);
-                  user_score = parseFloat(1.0/parseFloat(guess_error)) * 100000;
-                };
-
-                return this.props.db.collection('user-games').doc(doc.id).update({
-                  score: user_score,
-                  guess_error: guess_error
-                });
-              });
-
-              Promise.all(calc_results).then(() => {
-                this.props.db.collection('sessions').doc(this.props.session_id).update({
-                  session_status: 'results'
-                });
-
-                this.props.updateLocalStatus('results');
-              });
-            });
+            this.endGame();
           }, parseInt(game_length * 1000));
+
+          var unsubscribe = this.props.db.collection('user-games').where('game_id', '==', this.props.game_id).where('guess_coordinates', '==', null).onSnapshot((querySnapshot) => {
+            if(querySnapshot.size === 0) {
+              console.log('All players done! Wrapping up game...');
+              clearTimeout(game_timer);
+              this.endGame();
+            }
+          });
+
+          setTimeout(() => {unsubscribe()}, parseInt(game_length * 1000 + 100));
         });
       }
     });
   };
+
+  endGame() {
+    this.props.db.collection('sessions').doc(this.props.session_id).update({
+      session_status: 'postgame'
+    });
+    this.props.updateLocalStatus('postgame');
+
+    this.props.db.collection('games').doc(this.props.game_id).update({
+      status: 'complete'
+    });
+
+    this.props.db.collection('user-games').where('game_id', '==', this.props.game_id).get().then((querySnapshot) => {
+      var arrayQuerySnapshot = [];
+
+      querySnapshot.forEach((doc) => {
+        arrayQuerySnapshot.push(doc);
+      });
+
+      let calc_results = arrayQuerySnapshot.map((doc) => {
+        var target_coordinates = doc.data().target_coordinates;
+        var guess_coordinates = doc.data().guess_coordinates;
+        var guess_error = null;
+        var user_score = 1;
+
+        if(guess_coordinates !== null) {
+          guess_error = this.getDistanceFromLatLonInKm(target_coordinates['latitude'], target_coordinates['longitude'], guess_coordinates['latitude'], guess_coordinates['longitude']);
+          user_score = parseFloat(1.0/parseFloat(guess_error)) * 100000;
+        };
+
+        return this.props.db.collection('user-games').doc(doc.id).update({
+          score: user_score,
+          guess_error: guess_error
+        });
+      });
+
+      Promise.all(calc_results).then(() => {
+        this.props.db.collection('sessions').doc(this.props.session_id).update({
+          session_status: 'results'
+        });
+
+        this.props.updateLocalStatus('results');
+      });
+    });
+  }
 
   getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
   var R = 6371; // Radius of the earth in km

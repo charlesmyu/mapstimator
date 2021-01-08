@@ -326,7 +326,7 @@ class Session extends React.Component {
       );
     } else if (this.state.local_session_status === 'spectating') {
       return(
-        <h1 className="left-grey-box">spectating</h1>
+        <h1 className="left-grey-box">waiting...</h1>
       );
     } else if (this.state.local_session_status === 'postgame') {
       return(
