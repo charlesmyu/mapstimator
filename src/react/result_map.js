@@ -38,29 +38,19 @@ class ResultMap extends React.Component {
         target_marker.setMap(this.map);
       }
 
-      if(this.props.guess_coordinates) {
-        var guess_marker = new this.props.googleMaps.Marker({
-          position: {lat: this.props.guess_coordinates['latitude'], lng: this.props.guess_coordinates['longitude']},
-          label: '?'
-        });
-        guess_marker.setMap(this.map);
-      }
-
-      //
-      // this.map.addListener('click', (mapsMouseEvent) => {
-      //   console.log('Click logged');
-      //   var position = mapsMouseEvent.latLng;
-      //   if(this.marker === null) {
-      //     this.marker = new this.props.googleMaps.Marker({
-      //       position: position,
-      //     });
-      //     this.marker.setMap(this.map);
-      //   }
-      //
-      //   this.marker.setPosition(position);
-      //   this.props.updateGuessCoordinates(new firebase.firestore.GeoPoint(position.lat(), position.lng()));
-      // });
+      var count = 0;
+      this.props.guesses.forEach((guess) => {
+        count++;
+        if(guess.guess_coordinates) {
+          var guess_marker = new this.props.googleMaps.Marker({
+            position: {lat: guess.guess_coordinates['latitude'], lng: guess.guess_coordinates['longitude']},
+            label: count.toString()
+          });
+          guess_marker.setMap(this.map);
+        }
+      })
     }
+
     if (
       this.map !== null &&
       this.props.map_options &&

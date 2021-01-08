@@ -8,7 +8,6 @@ class Result extends React.Component {
     this.state = {
       positions: [],
       target_coordinates: null,
-      guess_coordinates: null,
       guess_error: null
     }
 
@@ -27,13 +26,13 @@ class Result extends React.Component {
       let results = arrayQuerySnapshot.map((doc) => {
         score_results.push({
           username: doc.data().username,
-          score: doc.data().score
+          score: doc.data().score,
+          guess_coordinates: doc.data().guess_coordinates
         });
 
         if(doc.data().username === this.props.username) {
           this.setState({
             target_coordinates: doc.data().target_coordinates,
-            guess_coordinates: doc.data().guess_coordinates,
             guess_error: doc.data().guess_error
           });
         }
@@ -118,7 +117,7 @@ class Result extends React.Component {
                 streetViewControl: false
               }}
               target_coordinates={this.state.target_coordinates}
-              guess_coordinates={this.state.guess_coordinates}
+              guesses={this.state.positions}
             />
           </div>
         </div>
