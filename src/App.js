@@ -45,7 +45,7 @@ function App(props) {
     <div className="App">
       <header className="App-header">
         <Session googleMaps={props.googleMaps} />
-        <p className="right-grey-box" id="made-by">made by <a href='https://github.com/charlesmyu/mapstimator'>charles yu</a></p>
+        <p className="right-grey-box" id="made-by">made by <a href='https://github.com/charlesmyu/mapstimator' rel='noreferrer' target='_blank'>charles yu</a></p>
       </header>
     </div>
   );
