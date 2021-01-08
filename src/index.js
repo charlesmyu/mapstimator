@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App api_key={'AIzaSyBo8Wc9Dbhzlfl3niaSOli-Jvpp3Dyy9r8'}/>
   </React.StrictMode>,
   document.getElementById('root')
 );

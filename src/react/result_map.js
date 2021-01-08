@@ -2,13 +2,11 @@
 
 import React from 'react';
 import isEqual from 'lodash.isequal';
-import firebase from 'firebase/app';
 
-class GoogleMaps extends React.Component {
+class ResultMap extends React.Component {
   constructor(props) {
     super(props);
     this.map = null;
-    this.marker = null;
   }
 
   componentDidMount() {
@@ -32,20 +30,36 @@ class GoogleMaps extends React.Component {
         this.props.map_options,
       );
 
-      this.map.addListener('click', (mapsMouseEvent) => {
-        console.log('Click logged');
-        var position = mapsMouseEvent.latLng;
-        if(this.marker === null) {
-          this.marker = new this.props.googleMaps.Marker({
-            position: position,
-            animation: this.props.googleMaps.Animation.DROP
-          });
-          this.marker.setMap(this.map);
-        }
+      if(this.props.target_coordinates) {
+        var target_marker = new this.props.googleMaps.Marker({
+          position: {lat: this.props.target_coordinates['latitude'], lng: this.props.target_coordinates['longitude']},
+          label: 'X'
+        });
+        target_marker.setMap(this.map);
+      }
 
-        this.marker.setPosition(position);
-        this.props.updateGuessCoordinates(new firebase.firestore.GeoPoint(position.lat(), position.lng()));
-      });
+      if(this.props.guess_coordinates) {
+        var guess_marker = new this.props.googleMaps.Marker({
+          position: {lat: this.props.guess_coordinates['latitude'], lng: this.props.guess_coordinates['longitude']},
+          label: '?'
+        });
+        guess_marker.setMap(this.map);
+      }
+
+      //
+      // this.map.addListener('click', (mapsMouseEvent) => {
+      //   console.log('Click logged');
+      //   var position = mapsMouseEvent.latLng;
+      //   if(this.marker === null) {
+      //     this.marker = new this.props.googleMaps.Marker({
+      //       position: position,
+      //     });
+      //     this.marker.setMap(this.map);
+      //   }
+      //
+      //   this.marker.setPosition(position);
+      //   this.props.updateGuessCoordinates(new firebase.firestore.GeoPoint(position.lat(), position.lng()));
+      // });
     }
     if (
       this.map !== null &&
@@ -78,8 +92,8 @@ class GoogleMaps extends React.Component {
   }
 
   render() {
-    return <div id="map" ref={node => (this.node = node)} />;
+    return <div id="result-map" ref={node => (this.node = node)} />;
   }
 }
 
-export default GoogleMaps;
+export default ResultMap;

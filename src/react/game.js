@@ -1,5 +1,4 @@
 import React from 'react';
-import asyncLoading from 'react-async-loader';
 import firebase from 'firebase/app';
 
 import GoogleStreetview from './streetview.js';
@@ -67,7 +66,8 @@ class Game extends React.Component {
         current_coordinates: null,
         guess_coordinates: null,
         guess_time: null,
-        score: null
+        score: null,
+        guess_error: null
       })
     }).then((result) => {
       this.setState({user_game: result.id});
@@ -98,16 +98,17 @@ class Game extends React.Component {
               let calc_results = arrayQuerySnapshot.map((doc) => {
                 var target_coordinates = doc.data().target_coordinates;
                 var guess_coordinates = doc.data().guess_coordinates;
+                var guess_error = null;
+                var user_score = 1;
 
-                var user_error = 100000;
                 if(guess_coordinates !== null) {
-                  user_error = this.getDistanceFromLatLonInKm(target_coordinates['latitude'], target_coordinates['longitude'], guess_coordinates['latitude'], guess_coordinates['longitude']);
+                  guess_error = this.getDistanceFromLatLonInKm(target_coordinates['latitude'], target_coordinates['longitude'], guess_coordinates['latitude'], guess_coordinates['longitude']);
+                  user_score = parseFloat(1.0/parseFloat(guess_error)) * 100000;
                 };
 
-                var user_score = parseFloat(1.0/parseFloat(user_error)) * 100000;
-
                 return this.props.db.collection('user-games').doc(doc.id).update({
-                  score: user_score
+                  score: user_score,
+                  guess_error: guess_error
                 });
               });
 
@@ -218,16 +219,4 @@ deg2rad(deg) {
   }
 }
 
-function mapScriptsToProps({ api_key }) {
-  if (!api_key) return {};
-
-  return {
-    googleMaps: {
-      globalPath: 'google.maps',
-      url: `https://maps.googleapis.com/maps/api/js?key=${api_key}&v=beta`,
-      jsonp: true,
-    },
-  };
-}
-
-export default asyncLoading (mapScriptsToProps)(Game);
+export default Game;

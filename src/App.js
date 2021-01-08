@@ -7,7 +7,7 @@ import { Result } from './react/result.js';
 
 import React from 'react';
 //import ReactDOM from 'react-dom';
-
+import asyncLoading from 'react-async-loader';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/analytics';
@@ -40,11 +40,11 @@ if (window.location.hostname === 'localhost') {
   cloud_functions_url = 'http://localhost:5001/mapstimator/us-central1';
 }
 
-function App() {
+function App(props) {
   return (
     <div className="App">
       <header className="App-header">
-        <Session />
+        <Session googleMaps={props.googleMaps} />
         <p className="right-grey-box" id="made-by">made by charles yu</p>
       </header>
     </div>
@@ -319,9 +319,9 @@ class Session extends React.Component {
           session_id={this.state.session_id}
           game_id={this.state.current_game_id}
           username={this.state.username}
-          api_key={'AIzaSyBo8Wc9Dbhzlfl3niaSOli-Jvpp3Dyy9r8'}
           host={this.state.host}
           updateLocalStatus={this.updateLocalStatus}
+          googleMaps={this.props.googleMaps}
         />
       );
     } else if (this.state.local_session_status === 'spectating') {
@@ -339,6 +339,8 @@ class Session extends React.Component {
           game_id={this.state.current_game_id}
           host={this.state.host}
           updateLocalStatus={this.updateLocalStatus}
+          googleMaps={this.props.googleMaps}
+          username={this.state.username}
         />
       );
     } else if (this.state.local_session_status === 'disconnected') {
@@ -372,4 +374,16 @@ class Title extends React.Component {
   };
 };
 
-export default App;
+function mapScriptsToProps({ api_key }) {
+  if (!api_key) return {};
+
+  return {
+    googleMaps: {
+      globalPath: 'google.maps',
+      url: `https://maps.googleapis.com/maps/api/js?key=${api_key}&v=beta`,
+      jsonp: true,
+    },
+  };
+}
+
+export default asyncLoading (mapScriptsToProps)(App);
