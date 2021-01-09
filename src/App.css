@@ -201,6 +201,10 @@
   font-weight: lighter;
 }
 
+button[disabled], button:disabled {
+  background-color: rgb(77, 77, 77);
+}
+
 .game-options {
   display: inline;
 }

@@ -65,7 +65,7 @@ class PregameHost extends React.Component {
         />
         <div className="clearfix" />
         <div className="button-option float-left" id="pregame-options">
-          <h3 className="game-options">Time Limit: </h3>
+          <h3 className="game-options">time limit: </h3>
           <input className="game-options" id="time-limit-input"
             type="number"
             defaultValue="10"

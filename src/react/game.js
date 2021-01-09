@@ -29,14 +29,18 @@ class Game extends React.Component {
   }
 
   submitEstimate() {
-    console.log('Submitting estimate...');
-    const {serverTimestamp} = firebase.firestore.FieldValue;
-    this.props.db.collection('user-games').doc(this.state.user_game).update({
-      guess_coordinates: this.state.guess_coordinates,
-      guess_time: serverTimestamp()
-    });
-    this.props.updateLocalStatus('spectating');
-  }
+    if(this.state.guess_coordinates) {
+      console.log('Submitting estimate...');
+      const {serverTimestamp} = firebase.firestore.FieldValue;
+      this.props.db.collection('user-games').doc(this.state.user_game).update({
+        guess_coordinates: this.state.guess_coordinates,
+        guess_time: serverTimestamp()
+      });
+      this.props.updateLocalStatus('spectating');
+    } else {
+      console.log('No guess found...');
+    }
+  }s
 
   toggleMap() {
     console.log('Toggling map...');
@@ -117,7 +121,7 @@ class Game extends React.Component {
         var target_coordinates = doc.data().target_coordinates;
         var guess_coordinates = doc.data().guess_coordinates;
         var guess_error = null;
-        var user_score = 1;
+        var user_score = 0;
 
         if(guess_coordinates !== null) {
           guess_error = this.getDistanceFromLatLonInKm(target_coordinates['latitude'], target_coordinates['longitude'], guess_coordinates['latitude'], guess_coordinates['longitude']);
@@ -168,7 +172,7 @@ deg2rad(deg) {
           addressControl: false,
           fullscreenControl: false,
           showRoadLabels: false,
-          enableCloseButton: false
+          enableCloseButton: false,
         }}
         location={{lat: this.state.target_coordinates['latitude'], lng: this.state.target_coordinates['longitude']}}
         updateTargetCoordinates={this.updateTargetCoordinates}
@@ -177,6 +181,11 @@ deg2rad(deg) {
   }
 
   renderMap() {
+    var disabled = true;
+    if (this.state.guess_coordinates) {
+      disabled = false;
+    }
+
     if(this.state.minimized_map) {
       return(
         <button className="main-button" id="maximize-map-button"
@@ -211,7 +220,8 @@ deg2rad(deg) {
           <button className="main-button" id="submit-estimate-button"
             type="button"
             name="Submit Estimate"
-            onClick={this.submitEstimate}>
+            onClick={this.submitEstimate}
+            disabled={disabled}>
               submit estimate
           </button>
         </div>
